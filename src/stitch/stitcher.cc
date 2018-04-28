@@ -30,7 +30,10 @@ const static bool DEBUG_OUT = false;
 const static char* MATCHINFO_DUMP = "log/matchinfo.txt";
 
 Mat32f Stitcher::build(bool& success) {
-  success = calc_feature();
+  calc_feature(success);
+  if(!success){
+    return Mat32f();
+  }
   // TODO choose a better starting point by MST use centrality
 
   pairwise_matches.resize(imgs.size());

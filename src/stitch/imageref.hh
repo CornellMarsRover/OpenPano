@@ -19,15 +19,15 @@ struct ImageRef {
   //ImageRef(const ImageRef& ) = delete;  // TODO make it work
   ~ImageRef() { if (img) delete img; }
 
-  bool load() {
-    bool success;
-    if (img) return true;
-    img = new Mat32f{read_img(fname.c_str(), success)};
-//    Mat32f tmp = read_img(fname.c_str(), success);
-//    img = &tmp;
+  void load(bool& success) {
+    if (img) return;
+    Mat32f* temp = new Mat32f{read_img(fname.c_str(), success)};
+    if(!success){
+      return;
+    }
+    img = temp;
     _width = img->width();
     _height = img->height();
-    return success;
   }
 
   void release() { if (img) delete img; img = nullptr; }
