@@ -50,8 +50,12 @@ Mat32f Stitcher::build(bool& success) {
   }
   assign_center();
 
-  if (ESTIMATE_CAMERA)
-    estimate_camera();
+  if (ESTIMATE_CAMERA){
+    estimate_camera(success);
+    if(!success){
+      return Mat32f();
+    }
+  }
   else
     build_linear_simple();		// naive mode
   pairwise_matches.clear();
@@ -143,10 +147,13 @@ void Stitcher::assign_center() {
   //bundle.identity_idx = 0;
 }
 
-void Stitcher::estimate_camera() {
+void Stitcher::estimate_camera(bool& success) {
   vector<Shape2D> shapes;
   for (auto& m: imgs) shapes.emplace_back(m.shape());
-  auto cameras = CameraEstimator{pairwise_matches, shapes}.estimate();
+  auto cameras = CameraEstimator{pairwise_matches, shapes}.estimate(success);
+  if(!success){
+    return;
+  }
 
   // produced homo operates on [-w/2,w/2] coordinate
   REP(i, imgs.size()) {

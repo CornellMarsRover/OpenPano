@@ -22,7 +22,7 @@ class CameraEstimator {
 		CameraEstimator(const CameraEstimator&) = delete;
 		CameraEstimator& operator = (const CameraEstimator&) = delete;
 
-		std::vector<Camera> estimate();
+		std::vector<Camera> estimate(bool& success);
 
     void estimate_focal();
 
@@ -39,7 +39,8 @@ class CameraEstimator {
 
 		void traverse(
 				std::function<void(int)> callback_init_node,
-				std::function<void(int, int)> callback_add_edge);
+				std::function<void(int, int)> callback_add_edge,
+				bool& success);
 };
 
 

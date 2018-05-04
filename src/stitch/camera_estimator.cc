@@ -43,7 +43,7 @@ void CameraEstimator::estimate_focal() {
   }
 }
 
-vector<Camera> CameraEstimator::estimate() {
+vector<Camera> CameraEstimator::estimate(bool& success) {
   GuardedTimer tm("Estimate Camera");
   estimate_focal();
 
@@ -87,7 +87,10 @@ vector<Camera> CameraEstimator::estimate() {
           if (MULTIPASS_BA == 1)
             iba.optimize();
         }
-      });
+      }, success);
+  if(!success){
+    return std::vector<Camera>();
+  }
 
   if (MULTIPASS_BA == 0) {		// optimize everything together
     REPL(i, 1, n) REP(j, i) {
@@ -104,7 +107,8 @@ vector<Camera> CameraEstimator::estimate() {
 
 void CameraEstimator::traverse(
     function<void(int)> callback_init_node,
-    function<void(int, int)> callback_edge) {
+    function<void(int, int)> callback_edge,
+    bool& success) {
   struct Edge {
     int v1, v2;
     float weight;
@@ -118,8 +122,13 @@ void CameraEstimator::traverse(
     if (m.confidence > best_edge.weight)
       best_edge = Edge{i, j, m.confidence};
   }
-  if (best_edge.v1 == -1)
-    error_exit("No connected images are found!");
+  if (best_edge.v1 == -1){
+    print_debug("No connected images are found!");
+    success = false;
+  }
+  if(!success){
+    return;
+  }
   callback_init_node(best_edge.v1);
 
   priority_queue<Edge> q;

@@ -40,7 +40,7 @@ class Stitcher : public StitcherBase {
 		void assign_center();
 
 		// build by estimating camera parameters
-		void estimate_camera();
+		void estimate_camera(bool& success);
 
 		// naively build panorama assuming linear imgs
 		void build_linear_simple();
