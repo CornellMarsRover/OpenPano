@@ -116,6 +116,7 @@ void CameraEstimator::traverse(
     bool operator < (const Edge& r) const { return weight < r.weight;	}
   };
   // choose a starting point
+  success = true;
   Edge best_edge{-1, -1, 0};
   REP(i, n) REPL(j, i+1, n) {
     auto& m = matches[i][j];
@@ -123,10 +124,8 @@ void CameraEstimator::traverse(
       best_edge = Edge{i, j, m.confidence};
   }
   if (best_edge.v1 == -1){
-    print_debug("No connected images are found!");
+    print_debug("No connected images are found!\n");
     success = false;
-  }
-  if(!success){
     return;
   }
   callback_init_node(best_edge.v1);
