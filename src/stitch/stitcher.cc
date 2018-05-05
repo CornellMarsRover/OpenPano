@@ -41,7 +41,10 @@ Mat32f Stitcher::build(bool& success) {
   if (ORDERED_INPUT)
     linear_pairwise_match();
   else
-    pairwise_match();
+    pairwise_match(success);
+  if(!success){
+    return Mat32f();
+  }
   free_feature();
   //load_matchinfo(MATCHINFO_DUMP);
   if (DEBUG_OUT) {
@@ -50,8 +53,12 @@ Mat32f Stitcher::build(bool& success) {
   }
   assign_center();
 
-  if (ESTIMATE_CAMERA)
-    estimate_camera();
+  if (ESTIMATE_CAMERA){
+    estimate_camera(success);
+    if(!success){
+      return Mat32f();
+    }
+  }
   else
     build_linear_simple();		// naive mode
   pairwise_matches.clear();
@@ -96,9 +103,15 @@ bool Stitcher::match_image(
   return true;
 }
 
-void Stitcher::pairwise_match() {
+void Stitcher::pairwise_match(bool& success) {
   GuardedTimer tm("pairwise_match()");
   size_t n = imgs.size();
+  if(n <= 1){
+    print_debug("Need more than one image\n");
+    success = false;
+    return;
+  }
+  success = true;
   vector<pair<int, int>> tasks;
   REP(i, n) REPL(j, i + 1, n) tasks.emplace_back(i, j);
 
@@ -143,10 +156,13 @@ void Stitcher::assign_center() {
   //bundle.identity_idx = 0;
 }
 
-void Stitcher::estimate_camera() {
+void Stitcher::estimate_camera(bool& success) {
   vector<Shape2D> shapes;
   for (auto& m: imgs) shapes.emplace_back(m.shape());
-  auto cameras = CameraEstimator{pairwise_matches, shapes}.estimate();
+  auto cameras = CameraEstimator{pairwise_matches, shapes}.estimate(success);
+  if(!success){
+    return;
+  }
 
   // produced homo operates on [-w/2,w/2] coordinate
   REP(i, imgs.size()) {

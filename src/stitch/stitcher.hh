@@ -32,7 +32,7 @@ class Stitcher : public StitcherBase {
 		bool match_image(const PairWiseMatcher&, int i, int j);
 
 		// pairwise matching of all images
-		void pairwise_match();
+		void pairwise_match(bool& success);
 		// equivalent to pairwise_match when dealing with linear images
 		void linear_pairwise_match();
 
@@ -40,7 +40,7 @@ class Stitcher : public StitcherBase {
 		void assign_center();
 
 		// build by estimating camera parameters
-		void estimate_camera();
+		void estimate_camera(bool& success);
 
 		// naively build panorama assuming linear imgs
 		void build_linear_simple();

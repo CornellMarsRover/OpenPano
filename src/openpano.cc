@@ -125,37 +125,3 @@ void openpano::stitch(
   		write_rgb(("/data/" + outfile + ".jpg").c_str(), res);
   	}
   }
-
-
-// void work(int argc, char* argv[]) {
-// /*
-//  *  vector<Mat32f> imgs(argc - 1);
-//  *  {
-//  *    GuardedTimer tm("Read images");
-//  *#pragma omp parallel for schedule(dynamic)
-//  *    REPL(i, 1, argc)
-//  *      imgs[i-1] = read_img(argv[i]);
-//  *  }
-//  */
-// 	vector<string> imgs;
-// 	REPL(i, 3, argc) imgs.emplace_back(argv[i]);
-// 	Mat32f res;
-// 	if (CYLINDER) {
-// 		CylinderStitcher p(move(imgs));
-// 		res = p.build();
-// 	} else {
-// 		Stitcher p(move(imgs));
-// 		res = p.build();
-// 	}
-//
-// 	if (CROP) {
-// 		int oldw = res.width(), oldh = res.height();
-// 		res = crop(res);
-// 		print_debug("Crop from %dx%d to %dx%d\n", oldw, oldh, res.width(), res.height());
-// 	}
-// 	{
-// 		GuardedTimer tm("Writing image");
-// 		std::string output_name = string(argv[2]);
-// 		write_rgb(("/Superproject/data/" + output_name + ".jpg").c_str(), res);
-// 	}
-// }
