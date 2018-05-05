@@ -107,6 +107,7 @@ void Stitcher::pairwise_match(bool& success) {
   GuardedTimer tm("pairwise_match()");
   size_t n = imgs.size();
   if(n <= 1){
+    print_debug("Need more than one image\n");
     success = false;
     return;
   }
