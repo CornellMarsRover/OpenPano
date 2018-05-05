@@ -41,7 +41,10 @@ Mat32f Stitcher::build(bool& success) {
   if (ORDERED_INPUT)
     linear_pairwise_match();
   else
-    pairwise_match();
+    pairwise_match(success);
+  if(!success){
+    return Mat32f();
+  }
   free_feature();
   //load_matchinfo(MATCHINFO_DUMP);
   if (DEBUG_OUT) {
@@ -100,9 +103,14 @@ bool Stitcher::match_image(
   return true;
 }
 
-void Stitcher::pairwise_match() {
+void Stitcher::pairwise_match(bool& success) {
   GuardedTimer tm("pairwise_match()");
   size_t n = imgs.size();
+  if(n <= 1){
+    success = false;
+    return;
+  }
+  success = true;
   vector<pair<int, int>> tasks;
   REP(i, n) REPL(j, i + 1, n) tasks.emplace_back(i, j);
 
